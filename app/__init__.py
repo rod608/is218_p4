@@ -23,8 +23,8 @@ def create_app():
     # add command function to cli commands
     app.cli.add_command(create_database)
 
-    @app.route('/')
-    def hello():
-        return 'Hello, World!'
+    @app.route("/")
+    def index():
+        return render_template('index.html')
 
     return app
