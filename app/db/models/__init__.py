@@ -65,13 +65,13 @@ class User(UserMixin, db.Model):
     is_admin = db.Column('is_admin', db.Boolean(), nullable=False, server_default='0')
     transactions = db.relationship("Transactions", back_populates="user", cascade="all, delete")
     locations = db.relationship("Location", secondary=location_user, backref="users")
+    balance = 0
 
-    def __init__(self, email, password, is_admin, balance):
+    def __init__(self, email, password, is_admin):
         self.email = email
         self.password = password
         self.registered_on = datetime.utcnow()
         self.is_admin = is_admin
-        self.balance = balance
 
     def is_authenticated(self):
         return True
@@ -93,3 +93,9 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.email
+
+    def get_balance(self):
+        return self.balance
+
+    def add_balance(self, new_funds):
+        self.balance += new_funds

@@ -51,7 +51,7 @@ def transactions_upload():
         log = logging.getLogger("myApp")
         user = current_user
         current_app.logger.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by {user}. Check myApp.log --")
-        log.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by current user {user} --")
+        log.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by current user {user} w/ balance {current_user.balance} --")
 
         # End: Commit and redirect.
         db.session.commit()

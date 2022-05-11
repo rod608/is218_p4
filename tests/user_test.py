@@ -9,7 +9,7 @@ def test_adding_user(application):
         transaction_count = db.session.query(Transactions).count()
 
         # record creation, addition, and commit
-        user = User('keith@webizly.com', 'testtest', True, 0)
+        user = User('keith@webizly.com', 'testtest', True)
         db.session.add(user)
         db.session.commit()
 
