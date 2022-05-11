@@ -20,7 +20,8 @@ Requirement #3: "You must create a database record that is related to the user r
    - COMPLETED | Found in the Song class within db/models/dunderinit. All four requested properties for the Transaction-related datatable are included.
 
 Requirement #4: "You must calculate a balance and have a test for this."
-   - In-Progress | The balance has been added as a property of the User model. It is initially 0 and is updated when the user uploads a transaction csv file (check transactions/dunderinit)
+   - COMPLETED | The balance has been added as a property of the User model. It is calculated when a user uploads a csv (check transactions/dunderinit) and is initially 0. 
+   - The test is embedded within the csv_verification_test as it kills two birds with one stone.
 
 Requirement #5: "You must have a test for login, a test for registration, a test for accessing the dashboard as a logged-in user, and a test for denying access to the dashboard, and denying access to uploading the CSV file"
    - COMPLETED | These tests can be found in tests/user_access_test.py

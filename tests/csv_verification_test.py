@@ -31,6 +31,14 @@ def test_csv_upload_and_verification(application, client, add_user):
         transactions_csv_data = open(transactions_csv, 'rb')
         data = {'file': (transactions_csv_data, 'transactions.csv')}
 
+        # Balance should be 0 before the upload.
+        assert user.balance == 0
+
         response = client.post('/transactions/upload', data=data)
+
+        # Balance should be the sum of all amounts after upload.
+        assert user.balance == 10601
+
+        # Proper redirect test.
         assert response.status_code == 302
         assert response.headers["Location"] == "/transactions"
