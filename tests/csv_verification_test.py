@@ -17,12 +17,12 @@ def test_csv_upload_and_verification(application, client, add_user):
 
     with application.test_client(user=None) as client:
         # This request has no user logged in, so they can not access the page.
-        response = client.get('/songs/upload')
+        response = client.get('/transactions/upload')
         assert response.status_code == 302
 
     with application.test_client(user=user) as client:
         # This request already has a user logged in, so they can access the page.
-        response = client.get('/songs/upload')
+        response = client.get('/transactions/upload')
         assert response.status_code == 200
 
         # Checking to see that csv submits and validates.
@@ -31,6 +31,6 @@ def test_csv_upload_and_verification(application, client, add_user):
         transactions_csv_data = open(transactions_csv, 'rb')
         data = {'file': (transactions_csv_data, 'transactions.csv')}
 
-        response = client.post('/songs/upload', data=data)
+        response = client.post('/transactions/upload', data=data)
         assert response.status_code == 302
-        assert response.headers["Location"] == "/songs"
+        assert response.headers["Location"] == "/transactions"

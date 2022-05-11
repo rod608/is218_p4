@@ -76,7 +76,7 @@ def test_csv_upload_granted(application, client, add_user):
 
     with application.test_client(user=user) as client:
         # This request has a user logged in.
-        response = client.get('/songs/upload')
+        response = client.get('/transactions/upload')
         assert response.status_code == 200
 
 
@@ -87,6 +87,6 @@ def test_csv_upload_denied(application, client):
 
     with application.test_client(user=None) as client:
         # This request has a user logged in.
-        response = client.get('/songs/upload')
+        response = client.get('/transactions/upload')
         assert response.status_code != 200
         assert response.status_code == 302
