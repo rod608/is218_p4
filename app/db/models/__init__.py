@@ -1,13 +1,11 @@
 from datetime import datetime
 
-# Project 3: One-to-Many relationship w/ Song (see how it is done with location)
-
-from sqlalchemy import Integer, ForeignKey
-from sqlalchemy.orm import relationship, declarative_base
-from werkzeug.security import check_password_hash, generate_password_hash
-from app.db import db
 from flask_login import UserMixin
+from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy_serializer import SerializerMixin
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app.db import db
 
 Base = declarative_base()
 
@@ -17,24 +15,19 @@ location_user = db.Table('location_user', db.Model.metadata,
                          )
 
 
-class Song(db.Model, SerializerMixin):
-    __tablename__ = 'songs'
+class Transactions(db.Model, SerializerMixin):
+    __tablename__ = 'transactions'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(300), nullable=True, unique=False)
-    artist = db.Column(db.String(300), nullable=True, unique=False)
-    # Added: year
-    year = db.Column(db.Integer, nullable=True, unique=False)
-    genre = db.Column(db.String(300), nullable=True, unique=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = relationship("User", back_populates="songs", uselist=False)
+    user = relationship("User", back_populates="transactions", uselist=False)
+    # Transaction-Specific
+    amount = db.Column(db.String(300), nullable=True, unique=False)
+    type = db.Column(db.String(300), nullable=True, unique=False)
 
-    ''' Project 3 Crucial Requirement: Make sure to have title, artist, year, and genre. '''
-    def __init__(self, title, artist, year, genre):
-        self.title = title
-        self.artist = artist
-        # Added: year
-        self.year = year
-        self.genre = genre
+    ''' Project 4 Crucial Requirement: Make sure to have all data '''
+    def __init__(self, amount, type):
+        self.amount = amount
+        self.type = type
 
 
 class Location(db.Model, SerializerMixin):
@@ -70,7 +63,7 @@ class User(UserMixin, db.Model):
     registered_on = db.Column('registered_on', db.DateTime)
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
     is_admin = db.Column('is_admin', db.Boolean(), nullable=False, server_default='0')
-    songs = db.relationship("Song", back_populates="user", cascade="all, delete")
+    transactions = db.relationship("Transactions", back_populates="user", cascade="all, delete")
     locations = db.relationship("Location", secondary=location_user, backref="users")
 
     def __init__(self, email, password, is_admin):

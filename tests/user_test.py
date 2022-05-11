@@ -1,12 +1,12 @@
 from app import db
-from app.db.models import User, Song
+from app.db.models import User, Transactions
 
 
 def test_adding_user(application):
     with application.app_context():
         # assert db.session.query(User).count() == 0
         user_count = db.session.query(User).count()
-        song_count = db.session.query(Song).count()
+        transaction_count = db.session.query(Transactions).count()
         # showing how to add a record
         # create a record
         user = User('keith@webizly.com', 'testtest', True)
@@ -21,19 +21,19 @@ def test_adding_user(application):
         # asserting that the user retrieved is correct
         assert user.email == 'keith@webizly.com'
         # this is how you get a related record ready for insert
-        user.songs = [Song("test", "smap", "1941", "rock"), Song("test2", "te", "1942", "rock")]
-        # commit is what saves the songs
+        user.transactions = [Transactions("200", "CREDIT"), Transactions("2000", "CREDIT")]
+        # commit is what saves the transactions
         db.session.commit()
-        assert db.session.query(Song).count() == song_count + 2
-        song1 = Song.query.filter_by(title='test').first()
-        assert song1.title == "test"
-        # changing the title of the song
-        song1.title = "SuperSongTitle"
-        # saving the new title of the song
+        assert db.session.query(Transactions).count() == transaction_count + 2
+        transaction1 = Transactions.query.filter_by(type='CREDIT').first()
+        assert transaction1.type == "CREDIT"
+        # changing the title of the transaction
+        transaction1.amount = "200"
+        # saving the new title of the transaction
         db.session.commit()
-        song2 = Song.query.filter_by(title='SuperSongTitle').first()
-        assert song2.title == "SuperSongTitle"
+        transaction2 = Transactions.query.filter_by(amount='2000').first()
+        assert transaction2.type == "CREDIT"
         # checking cascade delete
         db.session.delete(user)
         assert db.session.query(User).count() == user_count
-        assert db.session.query(Song).count() == song_count
+        assert db.session.query(Transactions).count() == transaction_count

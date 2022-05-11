@@ -3,13 +3,15 @@ import os
 from flask_login import FlaskLoginClient
 
 from app import db
-from app.db.models import User
+from app.db.models import User, Transactions
 
 
 def test_csv_upload_and_verification(application, client, add_user):
     application.test_client_class = FlaskLoginClient
     user = User.query.get(1)
+    transactions = Transactions.query.get(1)
 
+    assert transactions is None
     assert db.session.query(User).count() == 1
     assert user.email == 'keith@webizly.com'
 
@@ -25,9 +27,9 @@ def test_csv_upload_and_verification(application, client, add_user):
 
         # Checking to see that csv submits and validates.
         root = os.path.dirname(os.path.abspath(__file__))
-        music_csv = os.path.join(root, '../sample_csv/music.csv')
-        music_csv_data = open(music_csv, 'rb')
-        data = {'file': (music_csv_data, 'music.csv')}
+        transactions_csv = os.path.join(root, '../sample_csv/transactions.csv')
+        transactions_csv_data = open(transactions_csv, 'rb')
+        data = {'file': (transactions_csv_data, 'transactions.csv')}
 
         response = client.post('/songs/upload', data=data)
         assert response.status_code == 302
