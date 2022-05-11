@@ -41,7 +41,9 @@ def transactions_upload():
         with open(filepath, encoding='utf-8-sig') as file:
             csv_file = csv.DictReader(file)
             for row in csv_file:
-                list_of_transactions.append(Transactions(row['AMOUNT'], row['TYPE']))
+                current_transaction = Transactions(row['AMOUNT'], row['TYPE'])
+                list_of_transactions.append(current_transaction)
+                current_user.balance += int(current_transaction.amount)
 
         current_user.transactions += list_of_transactions
 
@@ -51,9 +53,8 @@ def transactions_upload():
         current_app.logger.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by {user}. Check myApp.log --")
         log.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by current user {user} --")
 
+        # End: Commit and redirect.
         db.session.commit()
-        ''' Project Requirement: Verify that the CSV file is uploaded and processed '''
-
         return redirect(url_for('transactions.transactions_browse'))
 
     try:

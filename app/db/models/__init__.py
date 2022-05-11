@@ -66,11 +66,12 @@ class User(UserMixin, db.Model):
     transactions = db.relationship("Transactions", back_populates="user", cascade="all, delete")
     locations = db.relationship("Location", secondary=location_user, backref="users")
 
-    def __init__(self, email, password, is_admin):
+    def __init__(self, email, password, is_admin, balance):
         self.email = email
         self.password = password
         self.registered_on = datetime.utcnow()
         self.is_admin = is_admin
+        self.balance = balance
 
     def is_authenticated(self):
         return True
