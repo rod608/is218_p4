@@ -22,7 +22,7 @@ def transactions_browse(page):
     pagination = Transactions.query.paginate(page, per_page, error_out=False)
     data = pagination.items
     try:
-        return render_template('browse_songs.html', data=data, pagination=pagination)
+        return render_template('browse_transactions.html', data=data, pagination=pagination)
     except TemplateNotFound:
         abort(404)
 
@@ -37,19 +37,19 @@ def transactions_upload():
 
         form.file.data.save(filepath)
 
-        list_of_songs = []
+        list_of_transactions = []
         with open(filepath, encoding='utf-8-sig') as file:
             csv_file = csv.DictReader(file)
             for row in csv_file:
-                list_of_songs.append(Transactions(row['AMOUNT'], row['TYPE']))
+                list_of_transactions.append(Transactions(row['AMOUNT'], row['TYPE']))
 
-        current_user.transactions += list_of_songs
+        current_user.transactions += list_of_transactions
 
         ''' Project Requirement: log file with an entry for each time a user uploads a CSV playlist. '''
         log = logging.getLogger("myApp")
         user = current_user
-        current_app.logger.info(f"\t-- {len(current_user.transactions)} Song(s) Uploaded by {user}. Check myApp.log --")
-        log.info(f"\t-- {len(current_user.transactions)} Song(s) Uploaded by current user {user} --")
+        current_app.logger.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by {user}. Check myApp.log --")
+        log.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by current user {user} --")
 
         db.session.commit()
         ''' Project Requirement: Verify that the CSV file is uploaded and processed '''
