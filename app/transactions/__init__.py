@@ -22,7 +22,7 @@ def transactions_browse(page):
     pagination = Transactions.query.paginate(page, per_page, error_out=False)
     data = pagination.items
     try:
-        return render_template('browse_transactions.html', data=data, pagination=pagination)
+        return render_template('browse_transactions.html', data=data, pagination=pagination, balance=current_user.balance)
     except TemplateNotFound:
         abort(404)
 
@@ -38,23 +38,29 @@ def transactions_upload():
         form.file.data.save(filepath)
 
         list_of_transactions = []
+        total_transactions = 0
         with open(filepath, encoding='utf-8-sig') as file:
             csv_file = csv.DictReader(file)
             for row in csv_file:
                 current_transaction = Transactions(row['AMOUNT'], row['TYPE'])
                 list_of_transactions.append(current_transaction)
-                current_user.balance += int(current_transaction.amount)
+                total_transactions = total_transactions + int(current_transaction.amount)
 
         current_user.transactions += list_of_transactions
+        current_user.add_balance(total_transactions)
+
+        # commit changes
+        db.session.commit()
 
         ''' Project Requirement: log file with an entry for each time a user uploads a CSV playlist. '''
         log = logging.getLogger("myApp")
-        user = current_user
-        current_app.logger.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by {user}. Check myApp.log --")
-        log.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by current user {user} w/ balance {current_user.balance} --")
-
-        # End: Commit and redirect.
+        current_app.logger.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by {current_user}. Check myApp.log --")
+        current_user.set_balance(current_user.balance)
         db.session.commit()
+        current_app.logger.info(f"current user bal: {current_user.balance}")
+        log.info(f"\t-- {len(current_user.transactions)} Transaction(s) Uploaded by current user {current_user} w/ balance {current_user.balance} --")
+
+        # end
         return redirect(url_for('transactions.transactions_browse'))
 
     try:

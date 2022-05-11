@@ -31,14 +31,20 @@ def test_csv_upload_and_verification(application, client, add_user):
         transactions_csv_data = open(transactions_csv, 'rb')
         data = {'file': (transactions_csv_data, 'transactions.csv')}
 
-        # Balance should be 0 before the upload.
+        # Balance should be 0 before the upload and 10601 after upload.
         assert user.balance == 0
-
         response = client.post('/transactions/upload', data=data)
-
-        # Balance should be the sum of all amounts after upload.
         assert user.balance == 10601
 
+        # Adding more csv files:
+        transactions_csv = os.path.join(root, '../sample_csv/transactions2.csv')
+        transactions_csv_data = open(transactions_csv, 'rb')
+        data = {'file': (transactions_csv_data, 'transactions2.csv')}
+        response = client.post('/transactions/upload', data=data)
+        assert user.balance == 12542
+
         # Proper redirect test.
+        user.balance = 0
+        assert user.balance == 0
         assert response.status_code == 302
         assert response.headers["Location"] == "/transactions"
